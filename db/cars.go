@@ -36,18 +36,19 @@ func DBGetCars() {
 	CarObj := Car{}
 	client, ctx, collection, err := CarObj.DBGetCollection()
 	defer client.Disconnect(ctx)
+	defer ctx.Done()
 	if err != nil {
 		log.Fatal("Failed to Open database", err.Error())
 		return
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	collCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	cursor, err := collection.Find(ctx, bson.D{})
+	cursor, err := collection.Find(collCtx, bson.D{})
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer cursor.Close(ctx)
+	defer cursor.Close(collCtx)
 
 	// Iterate over the results
 	var cars []Car
