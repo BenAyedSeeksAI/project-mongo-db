@@ -68,7 +68,9 @@ func DBInsertCar(carObj Car) {
 		log.Fatal("Failed to Open database", err.Error())
 		return
 	}
-	insertResult, err := collection.InsertOne(ctx, carObj)
+	collCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	insertResult, err := collection.InsertOne(collCtx, carObj)
 	if err != nil {
 		log.Fatal(err)
 	}
